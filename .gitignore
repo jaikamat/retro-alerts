@@ -1,2 +1,9 @@
 # Don't include misc
 /misc
+
+# No env variables or data visible
+.env
+/data/*
+
+# No node_modules
+/node_modules
