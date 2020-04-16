@@ -3,7 +3,7 @@
 
 # No env variables or data visible
 .env
-/data/*
+/scrape/data/*
 
 # No node_modules
-/node_modules
+node_modules
