@@ -9,6 +9,11 @@ var debug = require('debug')('server:server');
 var http = require('http');
 
 /**
+ * Database setup
+ */
+require('../db-connect');
+
+/**
  * Get port from environment and store in Express.
  */
 
