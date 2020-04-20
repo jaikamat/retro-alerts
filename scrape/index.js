@@ -5,7 +5,7 @@ const Bottleneck = require('bottleneck');
 const { getItemPage } = require('./fetch-inventory');
 const { refreshLightspeedAuthToken } = require('./lightspeed-token');
 
-async function gatherItems() {
+module.exports.scrapeInventory = async function () {
     try {
         console.time('processTime'); // Log process time
 
@@ -45,9 +45,9 @@ async function gatherItems() {
         fs.writeFileSync(`./data/inventory_${new Date().toISOString()}.json`, JSON.stringify(results));
 
         console.timeEnd('processTime'); // Log process time
+
+        return results;
     } catch (e) {
         console.log(e);
     }
 }
-
-gatherItems();
