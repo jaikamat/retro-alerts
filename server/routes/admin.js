@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const createError = require('http-errors');
 const { AdminModel } = require('../database/models/admin');
 
 router.post('/login', async (req, res, next) => {
@@ -12,7 +13,7 @@ router.post('/login', async (req, res, next) => {
         const user = await AdminModel.findOne({ username: username });
 
         if (!user) {
-            res.status(401).json({ message: 'Not authorized' })
+            throw new createError(401, 'Not authorized');
         } else {
             if (bcrypt.compareSync(password, user.password)) {
                 const payload = { username: username, admin: true };
@@ -21,7 +22,7 @@ router.post('/login', async (req, res, next) => {
 
                 res.status(200).json({ access_token: token });
             } else {
-                res.status(401).json({ message: 'Not authorized' });
+                throw new createError(401, 'Not authorized');
             }
         }
     } catch (err) {
