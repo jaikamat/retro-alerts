@@ -2,23 +2,34 @@ var express = require('express');
 var router = express.Router();
 const User = require('../database/models/user');
 
-/* GET users listing. */
+/**
+ * Get all users
+ */
 router.get('/', async (req, res) => {
-  const users = await User.find({});
-  res.json(users);
+  try {
+    res.json(await User.find({}));
+  } catch (err) {
+    next(err);
+  }
 });
 
-// GET specific user by name
+/**
+ * Get a user by name (firstname, lastname)
+ */
 router.get('/name', async (req, res, next) => {
+  const { firstname, lastname } = req.query;
+
   try {
-    // Get user here
-    res.json('get single user BY NAME')
+    res.json(await User.findOne({ firstname, lastname }))
   } catch (err) {
     next(err);
   }
 })
 
-// GET user product matches to inventory, for all users
+/**
+ * Get users who have matching inventory SKU's
+ * that match items in their wantlist
+ */
 router.get('/matches', async (req, res, next) => {
   try {
     const aggregate = await User.aggregate()
@@ -67,27 +78,33 @@ router.get('/matches', async (req, res, next) => {
   }
 })
 
-// GET specific user by id
+/**
+ * Get a user by id
+ */
 router.get('/:id', async (req, res, next) => {
   try {
-    // Get user here
-    res.json('get single user')
+    res.json(await User.findOne({ _id: req.params.id }))
   } catch (err) {
     next(err);
   }
 })
 
-// GET specific user wantlist
+/**
+ * Get a user's wantlist, by user id
+ */
 router.get('/:id/wantlist', async (req, res, next) => {
   try {
-    // Get user wantlist here
-    res.json('get wantlist')
+    const user = await User.findOne({ _id: req.params.id });
+
+    res.json(user.wantlist);
   } catch (err) {
     next(err);
   }
 })
 
-// POST specific user wantlist
+/**
+ * Edit a user's wantlist (add/remove)
+ */
 router.post('/:id/wantlist', async (req, res, next) => {
   try {
     // Post user wantlist here
@@ -97,7 +114,9 @@ router.post('/:id/wantlist', async (req, res, next) => {
   }
 })
 
-/* POST users listing. */
+/**
+ * Create a new user
+ */
 router.post('/', async (req, res, next) => {
   const { firstname, lastname, email, phone, wantlist } = req.body;
 
@@ -110,9 +129,7 @@ router.post('/', async (req, res, next) => {
       wantlist
     });
 
-    await user.save();
-
-    res.json('User was supposed to be saved');
+    res.json(await user.save());
   } catch (err) {
     next(err);
   }
