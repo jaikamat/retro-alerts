@@ -26,6 +26,9 @@ async function init() {
 
         const db = client.db(DATABASE).collection(COLLECTION);
 
+        await db.createIndex({ systemSku: 1 });
+        console.log(`Index on systemSku created!`);
+
         const scrapedData = await scrapeInventory();
 
         const scrapedDataModified = scrapedData.map(d => {
