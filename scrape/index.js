@@ -29,8 +29,8 @@ async function init() {
         const scrapedData = await scrapeInventory();
 
         const scrapedDataModified = scrapedData.map(d => {
-            const { systemSku, description, customSku, manufacturerSku, Prices } = d;
-            return { systemSku, description, customSku, manufacturerSku, Prices };
+            const { systemSku, description, customSku, manufacturerSku, Prices, ItemShops } = d;
+            return { systemSku, description, customSku, manufacturerSku, Prices, ItemShops };
         })
 
         const bulkWriteOps = scrapedDataModified.map(d => {

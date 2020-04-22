@@ -3,7 +3,7 @@ const axios = require('axios');
 async function getItemPage(token, offset) {
     try {
         const { data } = await axios.get(`${process.env.LS_ENDPOINT}/Item.json`, {
-            params: { offset },
+            params: { offset, load_relations: `["ItemShops"]` }, // ItemShops is the qoh
             headers: { Authorization: `Bearer ${token}` }
         });
 
