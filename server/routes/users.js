@@ -27,7 +27,7 @@ router.get('/name', async (req, res, next) => {
 })
 
 /**
- * Get users who have matching inventory SKU's
+ * Get users who have matching inventory UPC's
  * that match items in their wantlist
  */
 router.get('/matches', async (req, res, next) => {
@@ -36,8 +36,8 @@ router.get('/matches', async (req, res, next) => {
       .unwind('wantlist') // Separate each user out for each item in their wantlist
       .lookup({ // Map matches from the inventory to another field
         from: 'scraped_inventory',
-        localField: 'wantlist.SKU',
-        foreignField: 'systemSku',
+        localField: 'wantlist.itemId',
+        foreignField: 'upc',
         as: 'match'
       })
       .unwind('match') // lookup yields an array - unwind it into an object
@@ -66,7 +66,7 @@ router.get('/matches', async (req, res, next) => {
         phone: 1,
         wantlist: 1,
         'matches._id': 1,
-        'matches.systemSku': 1,
+        'matches.upc': 1,
         'matches.description': 1,
         'matches.ItemShops': 1,
         'matches.totalQoh': 1

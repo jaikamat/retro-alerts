@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     phone: Number,
     wantlist: [{
         title: String,
-        SKU: {
+        itemId: {
             type: String,
             required: true
         }
