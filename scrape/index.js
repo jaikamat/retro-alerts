@@ -27,13 +27,14 @@ async function init() {
         const db = client.db(DATABASE).collection(COLLECTION);
 
         await db.createIndex({ systemSku: 1 });
-        console.log(`Index on systemSku created!`);
+        await db.createIndex({ upc: 1 });
+        console.log(`Index on systemSku and upc created!`);
 
         const scrapedData = await scrapeInventory();
 
         const scrapedDataModified = scrapedData.map(d => {
-            const { systemSku, description, customSku, manufacturerSku, Prices, ItemShops } = d;
-            return { systemSku, description, customSku, manufacturerSku, Prices, ItemShops };
+            const { systemSku, description, customSku, manufacturerSku, upc, Prices, ItemShops } = d;
+            return { systemSku, description, customSku, manufacturerSku, upc, Prices, ItemShops };
         })
 
         const bulkWriteOps = scrapedDataModified.map(d => {
