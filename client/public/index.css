@@ -1,0 +1,4 @@
+/** user-agent-stylesheet was setting the body to 8px margin, reset here */
+body {
+    margin: 0 0 0 0;
+}

@@ -4,9 +4,9 @@ import Main from './Main';
 
 export default function App() {
   return (
-    <div>
+    <React.Fragment>
       <Navbar />
       <Main />
-    </div>
+    </React.Fragment>
   )
 }
