@@ -5,17 +5,15 @@ import Login from './Login';
 import Homepage from './Homepage';
 
 const PadContent = styled.div`
-    margin-top: 40px;
+    margin-top: ${props => props.marginTop}px;
 `;
-
-
 
 export default function Main() {
     return (
-        <PadContent>
+        <PadContent marginTop={50}>
             <Switch>
-                <Route exact path="/" component={Login} />
-                <Route exact path="/link" component={Homepage} />
+                <Route exact path="/" component={Homepage} />
+                <Route exact path="/login" component={Login} />
             </Switch>
         </PadContent>
     )
