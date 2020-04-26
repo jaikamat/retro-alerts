@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, HashRouter as Router } from 'react-router-dom';
 import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
 
 const Header = styled.nav`
     /** Fixes the bar to the top */
@@ -43,6 +44,9 @@ const StyledLink = styled(Link)`
     @media (max-width: 768px) {
         padding: 0 10px 0 10px;
     }
+    background-color: ${props =>
+        props.active ? 'rgba(255, 255, 255, 0.1)' : ''
+    };
 `;
 
 const Logo = styled(StyledLink)`
@@ -57,14 +61,21 @@ const LinkText = styled.div`
 
 const navHeight = 50;
 
-export default function Navbar() {
+let Navbar = (props) => {
+    const { pathname } = props.location;
+    const [path, setPath] = useState(pathname);
+
+    useEffect(() => { setPath(pathname) }, [pathname]);
+
     return (
         <Header height={navHeight}>
             <Router>
                 <Logo to="/" replace><LinkText>SnapAlert</LinkText></Logo>
-                <StyledLink to="/users" replace><LinkText>Users</LinkText></StyledLink>
-                <StyledLink to="/login" replace><LinkText>Log in</LinkText></StyledLink>
+                <StyledLink active={path === '/users' ? 1 : 0} to="/users" replace><LinkText>Users</LinkText></StyledLink>
+                <StyledLink active={path === '/login' ? 1 : 0} to="/login" replace><LinkText>Log in</LinkText></StyledLink>
             </Router>
         </Header>
     )
 }
+
+export default withRouter((props) => <Navbar {...props} />);
