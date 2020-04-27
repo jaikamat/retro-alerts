@@ -1,6 +1,11 @@
 /** user-agent-stylesheet resets */
 body {
     margin: 0 0 0 0;
+    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body * {
+    font-size: 15px;
 }
 
 ul {

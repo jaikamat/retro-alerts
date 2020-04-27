@@ -20,7 +20,6 @@ const Header = styled.nav`
     box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
 
     /** Font */
-    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 600;
 
     /** Display */
