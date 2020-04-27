@@ -8,13 +8,11 @@ export const AuthProvider = props => {
 
     const handleLogin = async (username, password) => {
         try {
-            const { data } = await axios.post(`http://localhost:3000/admin/login`, {
-                username: username,
-                password: password
-            });
+            const { data } = await axios.post(`http://localhost:3000/admin/login`, { username, password });
 
             localStorage.setItem('token', data.access_token);
-            setLoggedIn(!!localStorage.getItem('token'));
+            await setLoggedIn(!!localStorage.getItem('token'));
+            return loggedIn;
         } catch (err) {
             console.log(err);
         }
@@ -23,7 +21,8 @@ export const AuthProvider = props => {
     const handleLogout = async () => {
         try {
             localStorage.removeItem('token');
-            setLoggedIn(!!localStorage.getItem('token'));
+            await setLoggedIn(!!localStorage.getItem('token'));
+            return loggedIn;
         } catch (err) {
             console.log(err);
         }
