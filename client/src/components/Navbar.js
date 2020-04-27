@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, HashRouter as Router } from 'react-router-dom';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 
 const Header = styled.nav`
     /** Fixes the bar to the top */
@@ -66,15 +67,18 @@ let Navbar = (props) => {
 
     useEffect(() => { setPath(pathname) }, [pathname]);
 
-    return (
-        <Header height={navHeight}>
-            <Router>
-                <Logo to="/" replace><LinkText>SnapAlert</LinkText></Logo>
-                <StyledLink active={path === '/users' ? 1 : 0} to="/users" replace><LinkText>Users</LinkText></StyledLink>
-                <StyledLink active={path === '/login' ? 1 : 0} to="/login" replace><LinkText>Log in</LinkText></StyledLink>
-            </Router>
-        </Header>
-    )
+    return <AuthContext.Consumer>
+        {({ loggedIn }) => {
+            return <Header height={navHeight}>
+                <Router>
+                    <Logo to="/" replace><LinkText>SnapAlert</LinkText></Logo>
+                    <StyledLink active={path === '/users' ? 1 : 0} to="/users" replace><LinkText>Users</LinkText></StyledLink>
+                    <StyledLink active={path === '/login' ? 1 : 0} to="/login" replace><LinkText>Log in</LinkText></StyledLink>
+                    <StyledLink active={path === '/logout' ? 1 : 0} to="/logout" replace><LinkText>Log out</LinkText></StyledLink>
+                </Router>
+            </Header>
+        }}
+    </AuthContext.Consumer>
 }
 
 export default withRouter((props) => <Navbar {...props} />);
