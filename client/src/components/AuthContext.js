@@ -10,9 +10,13 @@ export const AuthProvider = props => {
         try {
             const { data } = await axios.post(`http://localhost:3000/admin/login`, { username, password });
 
-            localStorage.setItem('token', data.access_token);
-            await setLoggedIn(!!localStorage.getItem('token'));
-            return loggedIn;
+            if (data.access_token) {
+                localStorage.setItem('token', data.access_token);
+                await setLoggedIn(!!localStorage.getItem('token'));
+                return true;
+            } else {
+                return false;
+            }
         } catch (err) {
             console.log(err);
         }

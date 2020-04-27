@@ -7,6 +7,9 @@ import Form from './viewComponents/Form';
 import Button from './viewComponents/Button';
 import { AuthContext } from './AuthContext';
 
+// TODO:
+// 1. Work in a "loader" into the button using css and 'loading' props
+
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -18,10 +21,12 @@ export default function Login() {
                     const isLoggedIn = await handleLogin(username, password);
 
                     if (isLoggedIn) {
-                        // toast here
+                        // toast here?
                         console.log('logged in!')
                     } else {
-                        // also toast here
+                        setUsername('');
+                        setPassword('');
+                        // also toast here?
                         console.log('not logged in!')
                     }
                 } catch (err) {
@@ -36,10 +41,10 @@ export default function Login() {
             return <Container center>
                 <Card>
                     <Form>
-                        <Input placeholder="Username" onChange={
+                        <Input placeholder="Username" value={username} onChange={
                             ({ target }) => setUsername(target.value)
                         } />
-                        <Input placeholder="Password" type="password" onChange={
+                        <Input placeholder="Password" value={password} type="password" onChange={
                             ({ target }) => setPassword(target.value)
                         } />
                         <Button disabled={!username || !password} onClick={() => login(username, password)}>Submit</Button>
