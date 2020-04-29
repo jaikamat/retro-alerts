@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Redirect } from 'react-router-dom'
 import Input from './viewComponents/Input';
 import Container from './viewComponents/Container';
@@ -6,28 +6,26 @@ import Card from './viewComponents/Card';
 import Form from './viewComponents/Form';
 import Button from './viewComponents/Button';
 import { AuthContext } from './AuthContext';
-
-// TODO:
-// 1. Work in a "loader" into the button using css and 'loading' props
+import { SpinnerContext } from './viewComponents/SpinnerContext';
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const { toggleSpin } = useContext(SpinnerContext);
 
     return <AuthContext.Consumer>
         {({ handleLogin, loggedIn }) => {
             const login = async (username, password) => {
                 try {
+                    toggleSpin.on();
                     const isLoggedIn = await handleLogin(username, password);
 
                     if (isLoggedIn) {
-                        // toast here?
-                        console.log('logged in!')
+                        toggleSpin.off()
                     } else {
+                        toggleSpin.off()
                         setUsername('');
                         setPassword('');
-                        // also toast here?
-                        console.log('not logged in!')
                     }
                 } catch (err) {
                     console.log(err)
