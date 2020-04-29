@@ -7,6 +7,7 @@ const Card = styled.div`
     box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
     height: 200px;
     min-width: 300px;
+    box-sizing: content-box !important;
 `;
 
 export default Card

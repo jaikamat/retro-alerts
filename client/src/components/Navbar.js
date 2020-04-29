@@ -38,6 +38,7 @@ const StyledLink = styled(Link)`
         text-decoration: none;
     }
     &:hover {
+        color: white !important;
         background-color: rgba(255, 255, 255, 0.1);
         transition: 0.1s linear;
     }
