@@ -72,7 +72,7 @@ let Navbar = (props) => {
             return <Header height={navHeight}>
                 <Router>
                     <Logo to="/" replace><LinkText>SnapAlert</LinkText></Logo>
-                    <StyledLink active={path === '/users' ? 1 : 0} to="/users" replace><LinkText>Users</LinkText></StyledLink>
+                    {loggedIn && <StyledLink active={path === '/users' ? 1 : 0} to="/users" replace><LinkText>Users</LinkText></StyledLink>}
                     {!loggedIn && <StyledLink active={path === '/login' ? 1 : 0} to="/login" replace><LinkText>Log in</LinkText></StyledLink>}
                     {loggedIn && <StyledLink active={path === '/logout' ? 1 : 0} to="/logout" replace><LinkText>Log out</LinkText></StyledLink>}
                 </Router>

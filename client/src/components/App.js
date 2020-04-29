@@ -4,6 +4,7 @@ import Main from './Main';
 import Spinner from './viewComponents/Spinner';
 import { SpinnerProvider } from './viewComponents/SpinnerContext'
 import { AuthProvider } from './AuthContext';
+import 'semantic-ui-css/semantic.min.css';
 
 export default function App() {
   return <AuthProvider>
