@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Login from './Login';
 import Logout from './Logout';
 import Homepage from './Homepage';
+import Users from './Users';
 
 const PadContent = styled.div`
     margin-top: ${props => props.marginTop}px;
@@ -14,6 +15,7 @@ export default function Main() {
         <PadContent marginTop={50}>
             <Switch>
                 <Route exact path="/" component={Homepage} />
+                <Route exact path="/users" component={Users} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/logout" component={Logout} />
             </Switch>
