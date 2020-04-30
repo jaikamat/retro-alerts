@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
-import { Table } from 'semantic-ui-react';
+import { Table, Accordion, Segment, Container } from 'semantic-ui-react';
 
 export default function Users() {
     const [users, setUsers] = useState([]);
+    const [activeIndex, setActiveIndex] = useState(null);
     const { toggleSpin } = useContext(SpinnerContext);
 
     useEffect(() => {
@@ -21,27 +22,52 @@ export default function Users() {
         })();
     }, [])
 
+    // Activates the accordion
+    const activate = (idx) => {
+        if (idx === activeIndex) {
+            return setActiveIndex(null);
+        }
+        return setActiveIndex(idx);
+    }
+
     return <div>
-        <Table celled striped>
+        <Table celled fixed selectable>
             <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell>Last Name</Table.HeaderCell>
-                    <Table.HeaderCell>First Name</Table.HeaderCell>
-                    <Table.HeaderCell>Email</Table.HeaderCell>
-                    <Table.HeaderCell>Phone</Table.HeaderCell>
+                    <Table.HeaderCell width="4">Last Name</Table.HeaderCell>
+                    <Table.HeaderCell width="4">First Name</Table.HeaderCell>
+                    <Table.HeaderCell width="4">Email</Table.HeaderCell>
+                    <Table.HeaderCell width="4">Phone</Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
 
-            <Table.Body>
-                {users.map(u => {
-                    return <Table.Row>
-                        <Table.Cell>{u.lastname}</Table.Cell>
-                        <Table.Cell>{u.firstname}</Table.Cell>
-                        <Table.Cell>{u.email}</Table.Cell>
-                        <Table.Cell>{u.phone}</Table.Cell>
-                    </Table.Row>
+            <Accordion as={Table.Body}>
+                {users.map((u, idx) => {
+                    return <React.Fragment key={u._id}>
+                        <Accordion.Title
+                            as={Table.Row}
+                            key={u._id}
+                            active={activeIndex === idx}
+                            onClick={() => activate(idx)}
+                        >
+                            <Table.Cell>{u.lastname}</Table.Cell>
+                            <Table.Cell>{u.firstname}</Table.Cell>
+                            <Table.Cell>{u.email}</Table.Cell>
+                            <Table.Cell>{u.phone}</Table.Cell>
+                        </Accordion.Title>
+                        {/* <Accordion.Content as={Table.Row} active={activeIndex === idx}>
+                            <Table.Cell width="16">
+                                Cells interlinked within cells interlinked within cells interlinked
+                            </Table.Cell>
+                        </Accordion.Content> */}
+                        <Accordion.Content as={Table.Row} active={activeIndex === idx}>
+                            <Segment>
+                                Cells interlinked within cells interlinked within cells interlinked
+                            </Segment>
+                        </Accordion.Content>
+                    </React.Fragment>
                 })}
-            </Table.Body>
+            </Accordion>
         </Table>
     </div>
 }
