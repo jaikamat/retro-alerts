@@ -80,7 +80,7 @@ export default function Users() {
                                         <UserInfo {...u} />
                                     </Grid.Column>
                                     <Grid.Column>
-                                        <UserWishlist {...u} />
+                                        <UserWishlist wantlist={u.wantlist} userId={u._id} />
                                     </Grid.Column>
                                 </Grid>
                                 <DeleteUser deleteUser={deleteUser} userId={u._id} />

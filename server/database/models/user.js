@@ -12,7 +12,10 @@ const UserSchema = new mongoose.Schema({
     email: String,
     phone: Number,
     wantlist: [{
-        title: String,
+        title: {
+            type: String,
+            required: true
+        },
         itemId: {
             type: String,
             required: true

@@ -7,7 +7,7 @@ const User = require('../database/models/user');
  */
 router.get('/', async (req, res) => {
   try {
-    res.json(await User.find({}));
+    res.json(await User.find({}).sort('lastname'));
   } catch (err) {
     next(err);
   }
@@ -103,12 +103,28 @@ router.get('/:id/wantlist', async (req, res, next) => {
 })
 
 /**
- * Edit a user's wantlist (add/remove)
+ * Add item to user wantlist
  */
 router.post('/:id/wantlist', async (req, res, next) => {
+  const { title, itemId } = req.body;
+
   try {
-    // Post user wantlist here
-    res.json('post wantlist')
+    const user = await User.findOne({ _id: req.params.id });
+    user.wantlist.push({ itemId, title });
+    res.json(await user.save());
+  } catch (err) {
+    next(err);
+  }
+})
+
+/**
+ * Remove item from user wantlist
+ */
+router.delete('/:id/wantlist/:wantlistItemId', async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+    user.wantlist.pull({ _id: req.params.wantlistItemId });
+    res.json(await user.save());
   } catch (err) {
     next(err);
   }
@@ -130,6 +146,19 @@ router.post('/', async (req, res, next) => {
     });
 
     res.json(await user.save());
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Delete a single user from the database
+ */
+router.delete('/:id', async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    res.json(await User.deleteOne({ _id: id }));
   } catch (err) {
     next(err);
   }
