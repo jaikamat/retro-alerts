@@ -67,7 +67,7 @@ export default function Users() {
         <AddUser addUser={addUser} />
         <Accordion fluid styled>
             {users.map((u, idx) => {
-                return <React.Fragment>
+                return <React.Fragment key={u._id}>
                     <Accordion.Title active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
                         {u.lastname}, {u.firstname}

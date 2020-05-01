@@ -6,18 +6,28 @@ export default function AddUser({ addUser }) {
     const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const [modalOpen, setModalOpen] = useState(false);
+    const [activeModal, setActiveModal] = useState(false);
 
     const handleAdd = async () => {
         try {
             await addUser({ firstname, lastname, email, phone });
-            setModalOpen(false);
+            setActiveModal(false);
         } catch (err) {
             console.log(err);
         }
     }
 
-    return <Modal trigger={<Button onClick={() => setModalOpen(true)}>Add customer</Button>} open={modalOpen}>
+    const handleCancel = () => {
+        setActiveModal(false);
+        setFirstname('');
+        setLastname('');
+        setEmail('');
+        setPhone('');
+    }
+
+    const formValid = firstname && lastname && email && phone;
+
+    return <Modal trigger={<Button onClick={() => setActiveModal(true)}>Add customer</Button>} open={activeModal}>
         <Modal.Header>Add a customer</Modal.Header>
         <Modal.Content>
             <Form>
@@ -40,8 +50,8 @@ export default function AddUser({ addUser }) {
             </Form>
         </Modal.Content>
         <Modal.Actions>
-            <Button onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button onClick={() => handleAdd()}>Submit</Button>
+            <Button onClick={() => handleCancel(false)}>Cancel</Button>
+            <Button disabled={!formValid} onClick={() => handleAdd()}>Submit</Button>
         </Modal.Actions>
     </Modal >
 }
