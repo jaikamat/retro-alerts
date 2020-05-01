@@ -8,6 +8,7 @@ const Header = styled.nav`
     /** Fixes the bar to the top */
     position: fixed;
     top: 0;
+    z-index: 9999;
 
     /** Take up whole width */
     overflow: hidden;

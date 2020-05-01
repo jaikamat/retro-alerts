@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
-import { Table, Accordion, Segment, Button, Search, Grid, Container, Icon, Header } from 'semantic-ui-react';
+import { Accordion, Segment, Search, Container, Icon, Grid } from 'semantic-ui-react';
 import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
+import UserInfo from './UserInfo';
+import UserWishlist from './UserWishlist';
 
 export default function Users() {
     const [users, setUsers] = useState([]);
@@ -38,7 +40,7 @@ export default function Users() {
     const addUser = async ({ firstname, lastname, email, phone }) => {
         try {
             toggleSpin.on();
-            const { data } = await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone });
+            await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone });
             toggleSpin.off();
 
             await fetchUsers();
@@ -47,44 +49,18 @@ export default function Users() {
         }
     }
 
-    // return <React.Fragment>
-    //     <Search />
-    //     <AddUser addUser={addUser} />
-    //     <Table selectable>
-    //         <Table.Header>
-    //             <Table.Row>
-    //                 <Table.HeaderCell width="4">Last Name</Table.HeaderCell>
-    //                 <Table.HeaderCell width="4">First Name</Table.HeaderCell>
-    //                 <Table.HeaderCell width="4">Email</Table.HeaderCell>
-    //                 <Table.HeaderCell width="4">Phone</Table.HeaderCell>
-    //             </Table.Row>
-    //         </Table.Header>
+    // Deletes a user
+    const deleteUser = async userId => {
+        try {
+            toggleSpin.on();
+            await axios.delete(`http://localhost:3000/users/${userId}`)
+            toggleSpin.off();
 
-    //         <Accordion as={Table.Body} fluid>
-    //             {users.map((u, idx) => {
-    //                 return <React.Fragment key={u._id}>
-    //                     <Accordion.Title
-    //                         as={Table.Row}
-    //                         key={u._id}
-    //                         active={activeIndex === idx}
-    //                         onClick={() => activate(idx)}
-    //                     >
-    //                         <Table.Cell>{u.lastname}</Table.Cell>
-    //                         <Table.Cell>{u.firstname}</Table.Cell>
-    //                         <Table.Cell>{u.email}</Table.Cell>
-    //                         <Table.Cell>{u.phone}</Table.Cell>
-    //                     </Accordion.Title>
-
-    //                     <Accordion.Content as={Table.Row} active={activeIndex === idx}>
-    //                         <Table.Cell width="16">
-    //                             <Segment>Cells interlinked within cells interlinked within cells interlinked</Segment>
-    //                         </Table.Cell>
-    //                     </Accordion.Content>
-    //                 </React.Fragment>
-    //             })}
-    //         </Accordion>
-    //     </Table>
-    // </React.Fragment>
+            await fetchUsers();
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     return <React.Fragment>
         <Search />
@@ -99,7 +75,15 @@ export default function Users() {
                     <Accordion.Content active={activeIndex === idx}>
                         <Container>
                             <Segment>
-                                <DeleteUser />
+                                <Grid columns={2} stackable>
+                                    <Grid.Column>
+                                        <UserInfo {...u} />
+                                    </Grid.Column>
+                                    <Grid.Column>
+                                        <UserWishlist {...u} />
+                                    </Grid.Column>
+                                </Grid>
+                                <DeleteUser deleteUser={deleteUser} userId={u._id} />
                             </Segment>
                         </Container>
                     </Accordion.Content>
