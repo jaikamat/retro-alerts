@@ -48,8 +48,8 @@ export default function UserWishlist({ wantlist, userId }) {
         <Modal.Content>
             <Form>
                 <Form.Field>
-                    <label>SKU</label>
-                    <input placeholder="SKU" value={itemId} onChange={({ target }) => setItemId(target.value)} />
+                    <label>UPC</label>
+                    <input placeholder="UPC" value={itemId} onChange={({ target }) => setItemId(target.value)} />
                 </Form.Field>
                 <Form.Field>
                     <label>Title/Note</label>
@@ -81,7 +81,7 @@ export default function UserWishlist({ wantlist, userId }) {
 
                     return <Item key={w._id}>
                         <Item.Content>
-                            <Item.Header>SKU: {w.itemId}</Item.Header>
+                            <Item.Header>UPC: {w.itemId}</Item.Header>
                             <Item.Meta>{w.title}</Item.Meta>
                             {!!matches && <p style={{ color: 'red' }}>IN STOCK</p>}
 
