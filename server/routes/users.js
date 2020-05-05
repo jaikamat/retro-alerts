@@ -1,13 +1,32 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../database/models/user');
+const { ObjectId } = require('mongoose').Types; // Need to coerce some strings to ObjectId
 
 /**
- * Get all users
+ * Get all users and their subsequent matches
  */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    res.json(await User.find({}).sort('lastname'));
+    // TODO: This needs to only match if QOH > 0
+    const aggregate = await User.aggregate()
+      .unwind('wantlist')
+      .lookup({
+        from: 'scraped_inventory',
+        localField: 'wantlist.itemId',
+        foreignField: 'upc',
+        as: 'wantlist.match'
+      })
+      .group({
+        _id: '$_id',
+        firstname: { $first: '$firstname' },
+        lastname: { $first: '$lastname' },
+        email: { $first: '$email' },
+        phone: { $first: '$phone' },
+        wantlist: { $push: '$wantlist' }
+      });
+
+    res.json(aggregate);
   } catch (err) {
     next(err);
   }
@@ -40,7 +59,7 @@ router.get('/matches', async (req, res, next) => {
         foreignField: 'upc',
         as: 'match'
       })
-      .unwind('match') // lookup yields an array - unwind it into an object
+      .unwind('match') // .lookup() yields an array - unwind it into an object
       .addFields({ // Sum the qoh values on the ItemShop array onto each match property
         'match.totalQoh': {
           $reduce: {
@@ -111,7 +130,28 @@ router.post('/:id/wantlist', async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
     user.wantlist.push({ itemId, title });
-    res.json(await user.save());
+    await user.save();
+
+    const aggregate = await User.aggregate()
+      .match({ _id: ObjectId(req.params.id) })
+      .unwind('wantlist')
+      .lookup({
+        from: 'scraped_inventory',
+        localField: 'wantlist.itemId',
+        foreignField: 'upc',
+        as: 'wantlist.match'
+      })
+      .group({
+        _id: '$_id',
+        firstname: { $first: '$firstname' },
+        lastname: { $first: '$lastname' },
+        email: { $first: '$email' },
+        phone: { $first: '$phone' },
+        wantlist: { $push: '$wantlist' }
+      });
+
+    res.json(aggregate[0]);
+
   } catch (err) {
     next(err);
   }
@@ -124,7 +164,27 @@ router.delete('/:id/wantlist/:wantlistItemId', async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
     user.wantlist.pull({ _id: req.params.wantlistItemId });
-    res.json(await user.save());
+    await user.save();
+
+    const aggregate = await User.aggregate()
+      .match({ _id: ObjectId(req.params.id) })
+      .unwind('wantlist')
+      .lookup({
+        from: 'scraped_inventory',
+        localField: 'wantlist.itemId',
+        foreignField: 'upc',
+        as: 'wantlist.match'
+      })
+      .group({
+        _id: '$_id',
+        firstname: { $first: '$firstname' },
+        lastname: { $first: '$lastname' },
+        email: { $first: '$email' },
+        phone: { $first: '$phone' },
+        wantlist: { $push: '$wantlist' }
+      });
+
+    res.json(aggregate[0]);
   } catch (err) {
     next(err);
   }

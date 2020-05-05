@@ -28,6 +28,7 @@ export default function UserWishlist({ wantlist, userId }) {
         try {
             toggleSpin.on();
             const { data } = await axios.delete(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`);
+            console.log(data);
             setMyWantlist(data.wantlist);
             console.log(data);
             toggleSpin.off();
@@ -76,10 +77,14 @@ export default function UserWishlist({ wantlist, userId }) {
         <Segment>
             <Item.Group divided>
                 {myWantlist.map(w => {
+                    const matches = w.match ? w.match.length : 0;
+
                     return <Item key={w._id}>
                         <Item.Content>
                             <Item.Header>SKU: {w.itemId}</Item.Header>
                             <Item.Meta>{w.title}</Item.Meta>
+                            {!!matches && <p style={{ color: 'red' }}>IN STOCK</p>}
+
                         </Item.Content>
                         <Item.Extra><Button primary floated="right" onClick={() => removeFromWishlist(w._id)}>Remove from list</Button></Item.Extra>
                     </Item>

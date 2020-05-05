@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
-import { Accordion, Segment, Search, Container, Icon, Grid } from 'semantic-ui-react';
+import { Accordion, Segment, Search, Container, Icon, Grid, Label } from 'semantic-ui-react';
 import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
 import UserInfo from './UserInfo';
@@ -67,10 +67,15 @@ export default function Users() {
         <AddUser addUser={addUser} />
         <Accordion fluid styled>
             {users.map((u, idx) => {
+                const numMatches = u.wantlist.reduce((acc, curr) => {
+                    return acc + curr.match.length;
+                }, 0)
+
                 return <React.Fragment key={u._id}>
                     <Accordion.Title active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
                         {u.lastname}, {u.firstname}
+                        <Label>Matches: {numMatches}</Label>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === idx}>
                         <Container>
