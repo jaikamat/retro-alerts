@@ -74,8 +74,9 @@ export default function Users() {
                 return <React.Fragment key={u._id}>
                     <Accordion.Title active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
-                        {u.lastname}, {u.firstname}
-                        <Label>Matches: {numMatches}</Label>
+                        {u.lastname}, {u.firstname} {" "}
+                        <Label color="teal">{numMatches} matches</Label>
+                        <Label color="red">{numMatches} new items</Label>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === idx}>
                         <Container>

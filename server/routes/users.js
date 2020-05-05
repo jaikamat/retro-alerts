@@ -158,6 +158,45 @@ router.post('/:id/wantlist', async (req, res, next) => {
 })
 
 /**
+ * Set wantlist item as pending
+ */
+router.post('/:id/wantlist/:wantlistItemId', async (req, res, next) => {
+  const { setPending } = req.body;
+  const { id, wantlistItemId } = req.params;
+
+  try {
+    const user = await User.findOne({ _id: id });
+
+    const indexToSet = user.wantlist.findIndex(el => el._id.equals(wantlistItemId)); // .equals() is a function exposed on the ObjectId mongo datatype object
+    user.wantlist[indexToSet].pending = setPending; // Set the value through mutation
+
+    await user.save();
+
+    const aggregate = await User.aggregate()
+      .match({ _id: ObjectId(req.params.id) })
+      .unwind('wantlist')
+      .lookup({
+        from: 'scraped_inventory',
+        localField: 'wantlist.itemId',
+        foreignField: 'upc',
+        as: 'wantlist.match'
+      })
+      .group({
+        _id: '$_id',
+        firstname: { $first: '$firstname' },
+        lastname: { $first: '$lastname' },
+        email: { $first: '$email' },
+        phone: { $first: '$phone' },
+        wantlist: { $push: '$wantlist' }
+      });
+
+    res.json(aggregate[0]);
+  } catch (err) {
+    next(err);
+  }
+})
+
+/**
  * Remove item from user wantlist
  */
 router.delete('/:id/wantlist/:wantlistItemId', async (req, res, next) => {

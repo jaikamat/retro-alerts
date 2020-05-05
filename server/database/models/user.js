@@ -19,7 +19,8 @@ const UserSchema = new mongoose.Schema({
         itemId: {
             type: String,
             required: true
-        }
+        },
+        pending: Boolean
     }]
 });
 
