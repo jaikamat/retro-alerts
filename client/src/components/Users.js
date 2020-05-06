@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
 import { Accordion, Segment, Search, Container, Icon, Grid, Label } from 'semantic-ui-react';
+import makeAuthHeader from '../utils/makeAuthHeader';
 import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
 import UserInfo from './UserInfo';
@@ -15,7 +16,7 @@ export default function Users() {
     const fetchUsers = async () => {
         try {
             toggleSpin.on();
-            const { data } = await axios.get(`http://localhost:3000/users`);
+            const { data } = await axios.get(`http://localhost:3000/users`, { headers: makeAuthHeader() });
             setUsers(data);
             toggleSpin.off();
         } catch (e) {
@@ -48,7 +49,7 @@ export default function Users() {
     const addUser = async ({ firstname, lastname, email, phone }) => {
         try {
             toggleSpin.on();
-            await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone });
+            await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone }, { headers: makeAuthHeader() });
             toggleSpin.off();
 
             await fetchUsers();
@@ -61,7 +62,7 @@ export default function Users() {
     const deleteUser = async userId => {
         try {
             toggleSpin.on();
-            await axios.delete(`http://localhost:3000/users/${userId}`)
+            await axios.delete(`http://localhost:3000/users/${userId}`, { headers: makeAuthHeader() })
             toggleSpin.off();
 
             await fetchUsers();

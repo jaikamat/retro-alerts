@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { Item, Header, Segment, Button, Modal, Form } from 'semantic-ui-react';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
+import makeAuthHeader from '../utils/makeAuthHeader';
 
 export default function UserWishlist({ wantlist, userId, setSingleUser }) {
     const { toggleSpin } = useContext(SpinnerContext);
@@ -13,7 +14,7 @@ export default function UserWishlist({ wantlist, userId, setSingleUser }) {
     const addToWishlist = async () => {
         try {
             toggleSpin.on();
-            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist`, { title, itemId });
+            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist`, { title, itemId }, { headers: makeAuthHeader() });
             setActiveModal(false);
             setSingleUser(data);
             toggleSpin.off();
@@ -32,7 +33,7 @@ export default function UserWishlist({ wantlist, userId, setSingleUser }) {
             toggleSpin.on();
             const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, {
                 setPending: status
-            });
+            }, { headers: makeAuthHeader() });
             setSingleUser(data);
             toggleSpin.off();
         } catch (err) {
@@ -44,7 +45,7 @@ export default function UserWishlist({ wantlist, userId, setSingleUser }) {
     const removeFromWishlist = async (wantlistItemId) => {
         try {
             toggleSpin.on();
-            const { data } = await axios.delete(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`);
+            const { data } = await axios.delete(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, { headers: makeAuthHeader() });
             setSingleUser(data);
             toggleSpin.off();
         } catch (err) {

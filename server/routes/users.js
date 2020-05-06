@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 const User = require('../database/models/user');
 const { ObjectId } = require('mongoose').Types; // Need to coerce some strings to ObjectId
+const jwt = require('jsonwebtoken');
+const createError = require('http-errors');
+require('dotenv').config();
 
 /**
  * Aggregates all users or a single user, by performing a $lookup and matching UPC codes
@@ -50,6 +53,28 @@ async function aggregateUsers(userId) {
     // Again, it's kind of hacky but it works. TODO: Come back to this with a better solution!
     .sort({ lastname: 1 });
 }
+
+/**
+ * Authentication middleware
+ */
+router.use((req, res, next) => {
+  let token = req.headers['authorization']; // Note that Express converts headers to lowercase
+
+  if (token) {
+    if (token.startsWith('Bearer ')) {
+      token = token.slice(7, token.length) // Slice off 'Bearer '
+    }
+
+    try {
+      jwt.verify(token, process.env.PRIVATE_KEY);
+      return next();
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    next(createError(401, 'Not authorized'));
+  }
+})
 
 /**
  * Get all users and their subsequent matches
