@@ -69,14 +69,18 @@ export default function Users() {
             {users.map((u, idx) => {
                 const numMatches = u.wantlist.reduce((acc, curr) => {
                     return acc + curr.match.length;
+                }, 0);
+
+                const numNotPending = u.wantlist.reduce((acc, curr) => {
+                    return acc + (curr.pending ? 0 : 1);
                 }, 0)
 
                 return <React.Fragment key={u._id}>
                     <Accordion.Title active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
                         {u.lastname}, {u.firstname} {" "}
-                        <Label color="teal">{numMatches} matches</Label>
-                        <Label color="red">{numMatches} new items</Label>
+                        <Label color="teal">{numMatches} in stock</Label>
+                        <Label color="red">{numNotPending} unhandled</Label>
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === idx}>
                         <Container>

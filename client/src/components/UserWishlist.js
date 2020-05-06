@@ -23,6 +23,25 @@ export default function UserWishlist({ wantlist, userId }) {
         }
     }
 
+    /**
+     * Sets the 'pending' status of individual customer wishlist items
+     * @param {boolean} status
+     * @param {string} wantlistItemId
+     */
+    const togglePending = async (status, wantlistItemId) => {
+        try {
+            toggleSpin.on();
+            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, {
+                setPending: status
+            });
+            console.log(data);
+            setMyWantlist(data.wantlist);
+            toggleSpin.off();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     // Delete item from user's wishlist
     const removeFromWishlist = async (wantlistItemId) => {
         try {
@@ -78,15 +97,21 @@ export default function UserWishlist({ wantlist, userId }) {
             <Item.Group divided>
                 {myWantlist.map(w => {
                     const matches = w.match ? w.match.length : 0;
+                    const pendingStatus = w.pending ? w.pending : false; // Shows/hides the Pending status buttons
 
                     return <Item key={w._id}>
                         <Item.Content>
                             <Item.Header>UPC: {w.itemId}</Item.Header>
                             <Item.Meta>{w.title}</Item.Meta>
                             {!!matches && <p style={{ color: 'red' }}>IN STOCK</p>}
+                            {pendingStatus && <p style={{ color: 'green' }}>PENDING</p>}
 
                         </Item.Content>
                         <Item.Extra><Button primary floated="right" onClick={() => removeFromWishlist(w._id)}>Remove from list</Button></Item.Extra>
+                        <Item.Extra>
+                            {!pendingStatus && <Button floated="right" onClick={() => togglePending(true, w._id)}>Set as pending</Button>}
+                            {pendingStatus && <Button floated="right" onClick={() => togglePending(false, w._id)}>Cancel pending</Button>}
+                        </Item.Extra>
                     </Item>
                 })}
             </Item.Group>

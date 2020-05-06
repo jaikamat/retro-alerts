@@ -4,29 +4,60 @@ const User = require('../database/models/user');
 const { ObjectId } = require('mongoose').Types; // Need to coerce some strings to ObjectId
 
 /**
+ * Aggregates all users or a single user, by performing a $lookup and matching UPC codes
+ * @param {string} userId
+ */
+async function aggregateUsers(userId) {
+  let matchy = {}; // Find all users
+
+  if (userId) matchy = { _id: ObjectId(userId) }; // If userId provided, find specific user
+
+  // TODO: This needs to only match if QOH > 0
+  return await User.aggregate()
+    .match(matchy)
+    .unwind({
+      path: '$wantlist',
+      "preserveNullAndEmptyArrays": true
+    })
+    .lookup({
+      from: 'scraped_inventory',
+      localField: 'wantlist.itemId',
+      foreignField: 'upc',
+      as: 'wantlist.match'
+    })
+    .group({
+      _id: '$_id',
+      firstname: { $first: '$firstname' },
+      lastname: { $first: '$lastname' },
+      email: { $first: '$email' },
+      phone: { $first: '$phone' },
+      wantlist: { $push: '$wantlist' }
+    })
+    // Ok, this is weird one. Unwinding on null arrays then performing a $lookup
+    // and adding a 'match' property causes the unwound wantlist to be an object with a single property of 'match'
+    // equalling an empty array (because no matching values were looked-up). So, when we group and $push the wantlist
+    // previously, it pushes the single object into an array and this is the value: wantlist: [{ "match": [] }].
+    // So, we check the first array element for that value after grouping and re-set it back to an empty array.
+    .addFields({
+      wantlist: {
+        $cond: {
+          if: { $eq: [{ $arrayElemAt: ['$wantlist', 0] }, { "match": [] }] }, // <- Resetting the value here
+          then: [],
+          else: '$wantlist'
+        }
+      }
+    })
+    // Again, it's kind of hacky but it works. TODO: Come back to this with a better solution!
+    .sort({ lastname: 1 });
+}
+
+/**
  * Get all users and their subsequent matches
  */
 router.get('/', async (req, res, next) => {
   try {
-    // TODO: This needs to only match if QOH > 0
-    const aggregate = await User.aggregate()
-      .unwind('wantlist')
-      .lookup({
-        from: 'scraped_inventory',
-        localField: 'wantlist.itemId',
-        foreignField: 'upc',
-        as: 'wantlist.match'
-      })
-      .group({
-        _id: '$_id',
-        firstname: { $first: '$firstname' },
-        lastname: { $first: '$lastname' },
-        email: { $first: '$email' },
-        phone: { $first: '$phone' },
-        wantlist: { $push: '$wantlist' }
-      });
-
-    res.json(aggregate);
+    const users = await aggregateUsers();
+    res.json(users);
   } catch (err) {
     next(err);
   }
@@ -40,58 +71,6 @@ router.get('/name', async (req, res, next) => {
 
   try {
     res.json(await User.findOne({ firstname, lastname }))
-  } catch (err) {
-    next(err);
-  }
-})
-
-/**
- * Get users who have matching inventory UPC's
- * that match items in their wantlist
- */
-router.get('/matches', async (req, res, next) => {
-  try {
-    const aggregate = await User.aggregate()
-      .unwind('wantlist') // Separate each user out for each item in their wantlist
-      .lookup({ // Map matches from the inventory to another field
-        from: 'scraped_inventory',
-        localField: 'wantlist.itemId',
-        foreignField: 'upc',
-        as: 'match'
-      })
-      .unwind('match') // .lookup() yields an array - unwind it into an object
-      .addFields({ // Sum the qoh values on the ItemShop array onto each match property
-        'match.totalQoh': {
-          $reduce: {
-            input: '$match.ItemShops.ItemShop',
-            initialValue: 0,
-            in: { $sum: ['$$value', { $toInt: '$$this.qoh' }] }
-          }
-        }
-      })
-      .group({ // Group by user information TODO: study this method more
-        _id: '$_id',
-        firstname: { $first: '$firstname' },
-        lastname: { $first: '$lastname' },
-        email: { $first: '$email' },
-        phone: { $first: '$phone' },
-        matches: { $push: '$match' } // Creates an array from all grouped, individual matches
-      })
-      .project({
-        _id: 1,
-        firstname: 1,
-        lastname: 1,
-        email: 1,
-        phone: 1,
-        wantlist: 1,
-        'matches._id': 1,
-        'matches.upc': 1,
-        'matches.description': 1,
-        'matches.ItemShops': 1,
-        'matches.totalQoh': 1
-      });
-
-    res.json(aggregate);
   } catch (err) {
     next(err);
   }
@@ -132,23 +111,7 @@ router.post('/:id/wantlist', async (req, res, next) => {
     user.wantlist.push({ itemId, title });
     await user.save();
 
-    const aggregate = await User.aggregate()
-      .match({ _id: ObjectId(req.params.id) })
-      .unwind('wantlist')
-      .lookup({
-        from: 'scraped_inventory',
-        localField: 'wantlist.itemId',
-        foreignField: 'upc',
-        as: 'wantlist.match'
-      })
-      .group({
-        _id: '$_id',
-        firstname: { $first: '$firstname' },
-        lastname: { $first: '$lastname' },
-        email: { $first: '$email' },
-        phone: { $first: '$phone' },
-        wantlist: { $push: '$wantlist' }
-      });
+    const aggregate = await aggregateUsers(req.params.id)
 
     res.json(aggregate[0]);
 
@@ -172,23 +135,7 @@ router.post('/:id/wantlist/:wantlistItemId', async (req, res, next) => {
 
     await user.save();
 
-    const aggregate = await User.aggregate()
-      .match({ _id: ObjectId(req.params.id) })
-      .unwind('wantlist')
-      .lookup({
-        from: 'scraped_inventory',
-        localField: 'wantlist.itemId',
-        foreignField: 'upc',
-        as: 'wantlist.match'
-      })
-      .group({
-        _id: '$_id',
-        firstname: { $first: '$firstname' },
-        lastname: { $first: '$lastname' },
-        email: { $first: '$email' },
-        phone: { $first: '$phone' },
-        wantlist: { $push: '$wantlist' }
-      });
+    const aggregate = await aggregateUsers(id);
 
     res.json(aggregate[0]);
   } catch (err) {
@@ -205,23 +152,7 @@ router.delete('/:id/wantlist/:wantlistItemId', async (req, res, next) => {
     user.wantlist.pull({ _id: req.params.wantlistItemId });
     await user.save();
 
-    const aggregate = await User.aggregate()
-      .match({ _id: ObjectId(req.params.id) })
-      .unwind('wantlist')
-      .lookup({
-        from: 'scraped_inventory',
-        localField: 'wantlist.itemId',
-        foreignField: 'upc',
-        as: 'wantlist.match'
-      })
-      .group({
-        _id: '$_id',
-        firstname: { $first: '$firstname' },
-        lastname: { $first: '$lastname' },
-        email: { $first: '$email' },
-        phone: { $first: '$phone' },
-        wantlist: { $push: '$wantlist' }
-      });
+    const aggregate = await aggregateUsers(req.params.id)
 
     res.json(aggregate[0]);
   } catch (err) {
