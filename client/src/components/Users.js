@@ -26,7 +26,15 @@ export default function Users() {
 
     useEffect(() => {
         fetchUsers();
-    }, [])
+    }, []);
+
+    // Replaces a user and triggers a re-render
+    const setSingleUser = (user) => {
+        const usersCopy = [...users];
+        const idx = usersCopy.findIndex(el => el._id === user._id);
+        usersCopy.splice(idx, 1, user); // Mutate the array in-place with the new user
+        setUsers(usersCopy);
+    }
 
     // Activates the accordion
     const activate = (idx) => {
@@ -62,25 +70,25 @@ export default function Users() {
         }
     }
 
+    // Updates Row labels
+    const updateRowLabel = () => {
+        console.log('updating row label');
+    }
+
     return <React.Fragment>
         <Search />
         <AddUser addUser={addUser} />
         <Accordion fluid styled>
             {users.map((u, idx) => {
-                const numMatches = u.wantlist.reduce((acc, curr) => {
-                    return acc + curr.match.length;
-                }, 0);
-
-                const numNotPending = u.wantlist.reduce((acc, curr) => {
-                    return acc + (curr.pending ? 0 : 1);
-                }, 0)
+                const numMatches = u.wantlist.reduce((acc, curr) => acc + curr.match.length, 0);
+                const numNotPending = u.wantlist.reduce((acc, curr) => acc + (curr.pending ? 0 : 1), 0);
 
                 return <React.Fragment key={u._id}>
                     <Accordion.Title active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
                         {u.lastname}, {u.firstname} {" "}
-                        <Label color="teal">{numMatches} in stock</Label>
-                        <Label color="red">{numNotPending} unhandled</Label>
+                        {!!numMatches && <Label color="teal">{numMatches} in stock</Label>}
+                        {!!numNotPending && <Label color="red">{numNotPending} unhandled</Label>}
                     </Accordion.Title>
                     <Accordion.Content active={activeIndex === idx}>
                         <Container>
@@ -90,7 +98,7 @@ export default function Users() {
                                         <UserInfo {...u} />
                                     </Grid.Column>
                                     <Grid.Column>
-                                        <UserWishlist wantlist={u.wantlist} userId={u._id} />
+                                        <UserWishlist wantlist={u.wantlist} userId={u._id} setSingleUser={setSingleUser} />
                                     </Grid.Column>
                                 </Grid>
                                 <DeleteUser deleteUser={deleteUser} userId={u._id} />

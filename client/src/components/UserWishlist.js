@@ -3,11 +3,10 @@ import axios from 'axios';
 import { Item, Header, Segment, Button, Modal, Form } from 'semantic-ui-react';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
 
-export default function UserWishlist({ wantlist, userId }) {
+export default function UserWishlist({ wantlist, userId, setSingleUser }) {
     const { toggleSpin } = useContext(SpinnerContext);
     const [itemId, setItemId] = useState('');
     const [title, setTitle] = useState('');
-    const [myWantlist, setMyWantlist] = useState([...wantlist]);
     const [activeModal, setActiveModal] = useState(false);
 
     // Add an item to user's wishlist
@@ -16,7 +15,7 @@ export default function UserWishlist({ wantlist, userId }) {
             toggleSpin.on();
             const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist`, { title, itemId });
             setActiveModal(false);
-            setMyWantlist(data.wantlist);
+            setSingleUser(data);
             toggleSpin.off();
         } catch (err) {
             console.log(err);
@@ -34,8 +33,7 @@ export default function UserWishlist({ wantlist, userId }) {
             const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, {
                 setPending: status
             });
-            console.log(data);
-            setMyWantlist(data.wantlist);
+            setSingleUser(data);
             toggleSpin.off();
         } catch (err) {
             console.log(err);
@@ -47,9 +45,7 @@ export default function UserWishlist({ wantlist, userId }) {
         try {
             toggleSpin.on();
             const { data } = await axios.delete(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`);
-            console.log(data);
-            setMyWantlist(data.wantlist);
-            console.log(data);
+            setSingleUser(data);
             toggleSpin.off();
         } catch (err) {
             console.log(err);
@@ -82,7 +78,7 @@ export default function UserWishlist({ wantlist, userId }) {
         </Modal.Actions>
     </Modal>
 
-    if (myWantlist.length === 0) {
+    if (wantlist.length === 0) {
         return <React.Fragment>
             <Header as="h4">Customer wishlist</Header>
             <p>This customer's wishlist is empty!</p>
@@ -95,7 +91,7 @@ export default function UserWishlist({ wantlist, userId }) {
         {addItemModal}
         <Segment>
             <Item.Group divided>
-                {myWantlist.map(w => {
+                {wantlist.map(w => {
                     const matches = w.match ? w.match.length : 0;
                     const pendingStatus = w.pending ? w.pending : false; // Shows/hides the Pending status buttons
 
