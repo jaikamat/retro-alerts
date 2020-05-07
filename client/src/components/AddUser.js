@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, Modal, Form } from 'semantic-ui-react';
+import { UserContext } from './UserProvider';
 
-export default function AddUser({ addUser }) {
+export default function AddUser() {
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [activeModal, setActiveModal] = useState(false);
+    const { addUser } = useContext(UserContext);
 
     const handleAdd = async () => {
         try {
             await addUser({ firstname, lastname, email, phone });
-            setActiveModal(false);
+            handleReset();
         } catch (err) {
             console.log(err);
         }
     }
 
-    const handleCancel = () => {
+    const handleReset = () => {
         setActiveModal(false);
         setFirstname('');
         setLastname('');
@@ -50,7 +52,7 @@ export default function AddUser({ addUser }) {
             </Form>
         </Modal.Content>
         <Modal.Actions>
-            <Button onClick={() => handleCancel(false)}>Cancel</Button>
+            <Button onClick={() => handleReset(false)}>Cancel</Button>
             <Button disabled={!formValid} onClick={() => handleAdd()}>Submit</Button>
         </Modal.Actions>
     </Modal >

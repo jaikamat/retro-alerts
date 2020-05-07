@@ -1,44 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import { SpinnerContext } from './viewComponents/SpinnerContext';
 import { Accordion, Segment, Search, Container, Icon, Grid, Label } from 'semantic-ui-react';
-import makeAuthHeader from '../utils/makeAuthHeader';
+import _ from 'lodash';
 import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
 import UserInfo from './UserInfo';
 import UserWishlist from './UserWishlist';
-import _ from 'lodash';
+import { UserContext } from './UserProvider';
 
 export default function Users() {
-    const [users, setUsers] = useState([]);
     const [activeIndex, setActiveIndex] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const { toggleSpin } = useContext(SpinnerContext);
-
-    const fetchUsers = async () => {
-        try {
-            toggleSpin.on();
-            const { data } = await axios.get(`http://localhost:3000/users`, { headers: makeAuthHeader() });
-            setUsers(data);
-            toggleSpin.off();
-        } catch (e) {
-            toggleSpin.off();
-            console.log(e)
-        }
-    }
+    const { userlist, fetchUsers, filterByUsername } = useContext(UserContext);
 
     useEffect(() => {
-
         fetchUsers();
     }, []);
-
-    // Replaces a user and triggers a re-render
-    const setSingleUser = (user) => {
-        const usersCopy = [...users];
-        const idx = usersCopy.findIndex(el => el._id === user._id);
-        usersCopy.splice(idx, 1, user); // Mutate the array in-place with the new user
-        setUsers(usersCopy);
-    }
 
     // Activates the accordion
     const activate = (idx) => {
@@ -46,32 +21,6 @@ export default function Users() {
             return setActiveIndex(null);
         }
         return setActiveIndex(idx);
-    }
-
-    // Adds a user
-    const addUser = async ({ firstname, lastname, email, phone }) => {
-        try {
-            toggleSpin.on();
-            await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone }, { headers: makeAuthHeader() });
-            toggleSpin.off();
-
-            await fetchUsers();
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    // Deletes a user
-    const deleteUser = async userId => {
-        try {
-            toggleSpin.on();
-            await axios.delete(`http://localhost:3000/users/${userId}`, { headers: makeAuthHeader() })
-            toggleSpin.off();
-
-            await fetchUsers();
-        } catch (err) {
-            console.log(err);
-        }
     }
 
     // Filters users by name
@@ -83,14 +32,7 @@ export default function Users() {
                 await fetchUsers();
                 return;
             }
-
-            const { data } = await axios.get(`http://localhost:3000/users`, { headers: makeAuthHeader() });
-            const filteredUsers = data.filter(({ firstname, lastname }) => {
-                const fullname = (firstname + lastname).toLowerCase();
-                const termNoSpaces = value.replace(' ', '').toLowerCase();
-                return fullname.includes(termNoSpaces);
-            })
-            setUsers(filteredUsers);
+            await filterByUsername(value);
         }, 300)
     }
 
@@ -98,9 +40,9 @@ export default function Users() {
 
     return <React.Fragment>
         <Search placeholder="Search by name" showNoResults={false} onSearchChange={handleSearchChange} />
-        <AddUser addUser={addUser} />
+        <AddUser />
         <Accordion fluid styled>
-            {users.map((u, idx) => {
+            {userlist.map((u, idx) => {
                 const numMatches = u.wantlist.reduce((acc, curr) => acc + curr.match.length, 0);
                 const numNotPending = u.wantlist.reduce((acc, curr) => acc + (curr.pending ? 0 : 1), 0);
 
@@ -119,10 +61,10 @@ export default function Users() {
                                         <UserInfo {...u} />
                                     </Grid.Column>
                                     <Grid.Column>
-                                        <UserWishlist wantlist={u.wantlist} userId={u._id} setSingleUser={setSingleUser} />
+                                        <UserWishlist wantlist={u.wantlist} userId={u._id} />
                                     </Grid.Column>
                                 </Grid>
-                                <DeleteUser deleteUser={deleteUser} userId={u._id} />
+                                <DeleteUser userId={u._id} />
                             </Segment>
                         </Container>
                     </Accordion.Content>

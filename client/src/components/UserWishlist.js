@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { Item, Header, Segment, Button, Modal, Form } from 'semantic-ui-react';
+import { UserContext } from './UserProvider';
 import { SpinnerContext } from './viewComponents/SpinnerContext';
 import makeAuthHeader from '../utils/makeAuthHeader';
 
-export default function UserWishlist({ wantlist, userId, setSingleUser }) {
+export default function UserWishlist({ wantlist, userId }) {
     const { toggleSpin } = useContext(SpinnerContext);
+    const { setSingleUser } = useContext(UserContext);
     const [itemId, setItemId] = useState('');
     const [title, setTitle] = useState('');
     const [activeModal, setActiveModal] = useState(false);

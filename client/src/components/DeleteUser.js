@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Modal, Button } from 'semantic-ui-react';
+import { UserContext } from './UserProvider';
 
-export default function DeleteUser({ deleteUser, userId }) {
+export default function DeleteUser({ userId }) {
     const [activeModal, setActiveModal] = useState(false);
+    const { deleteUser } = useContext(UserContext);
 
     const handleDeletion = () => {
         deleteUser(userId);
