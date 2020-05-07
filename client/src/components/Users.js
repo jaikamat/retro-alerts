@@ -1,11 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Accordion, Segment, Search, Container, Icon, Grid, Label } from 'semantic-ui-react';
+import { Accordion, Segment, Search, Container, Icon, Label } from 'semantic-ui-react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
 import UserInfo from './UserInfo';
 import UserWishlist from './UserWishlist';
 import { UserContext } from './UserProvider';
+import { FlexRow, FlexColumn } from './style';
+
+const AccordionHeader = styled(Accordion.Title)`
+background-color: ${props => props.active ? `#eee` : null} !important;
+&:hover {
+    background-color: #eee !important;
+}
+`;
+
+const AccordionContent = styled(Accordion.Content)`
+background-color: ${props => props.active ? `#eee` : null} !important;
+`;
 
 export default function Users() {
     const [activeIndex, setActiveIndex] = useState(null);
@@ -25,8 +38,6 @@ export default function Users() {
 
     // Filters users by name
     const filterNames = (e, { value }) => {
-        console.log(value);
-
         setTimeout(async () => {
             if (value.length < 3) {
                 await fetchUsers();
@@ -39,35 +50,41 @@ export default function Users() {
     const handleSearchChange = _.debounce(filterNames, 500, { leading: false });
 
     return <React.Fragment>
-        <Search placeholder="Search by name" showNoResults={false} onSearchChange={handleSearchChange} />
-        <AddUser />
+        <FlexRow>
+            <Search placeholder="Search by name" showNoResults={false} onSearchChange={handleSearchChange} />
+            <AddUser />
+        </FlexRow>
         <Accordion fluid styled>
             {userlist.map((u, idx) => {
                 const numMatches = u.wantlist.reduce((acc, curr) => acc + curr.match.length, 0);
                 const numNotPending = u.wantlist.reduce((acc, curr) => acc + (curr.pending ? 0 : 1), 0);
 
                 return <React.Fragment key={u._id}>
-                    <Accordion.Title active={activeIndex === idx} onClick={() => activate(idx)}>
+                    <AccordionHeader active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
                         {u.lastname}, {u.firstname} {" "}
                         {!!numMatches && <Label color="teal">{numMatches} in stock</Label>}
                         {!!numNotPending && <Label color="red">{numNotPending} unhandled</Label>}
-                    </Accordion.Title>
-                    <Accordion.Content active={activeIndex === idx}>
+                    </AccordionHeader>
+                    <AccordionContent active={activeIndex === idx}>
                         <Container>
                             <Segment>
-                                <Grid columns={2} stackable>
-                                    <Grid.Column>
+                                <FlexRow>
+                                    <FlexColumn justify="start">
                                         <UserInfo {...u} />
+                                    </FlexColumn>
+                                    <UserWishlist wantlist={u.wantlist} userId={u._id} />
+                                </FlexRow>
+                                {/* <Grid columns={2} stackable>
+                                    <Grid.Column>
                                     </Grid.Column>
                                     <Grid.Column>
-                                        <UserWishlist wantlist={u.wantlist} userId={u._id} />
                                     </Grid.Column>
-                                </Grid>
+                                </Grid> */}
                                 <DeleteUser userId={u._id} />
                             </Segment>
                         </Container>
-                    </Accordion.Content>
+                    </AccordionContent>
                 </React.Fragment>
             })}
         </Accordion>

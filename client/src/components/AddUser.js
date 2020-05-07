@@ -1,6 +1,15 @@
 import React, { useState, useContext } from 'react';
 import { Button, Modal, Form } from 'semantic-ui-react';
+import styled from 'styled-components';
 import { UserContext } from './UserProvider';
+
+const StyledButton = styled(Button)`
+background-color: ${props => props.primary ? `salmon` : null} !important;
+&:hover {
+    background-color: rgba(251, 166, 157, 1) !important;
+    transition: 0.1s ease-in !important;
+}
+`;
 
 export default function AddUser() {
     const [firstname, setFirstname] = useState('');
@@ -29,7 +38,7 @@ export default function AddUser() {
 
     const formValid = firstname && lastname && email && phone;
 
-    return <Modal trigger={<Button onClick={() => setActiveModal(true)}>Add customer</Button>} open={activeModal}>
+    return <Modal trigger={<StyledButton floated="right" primary onClick={() => setActiveModal(true)}>Add customer</StyledButton>} open={activeModal}>
         <Modal.Header>Add a customer</Modal.Header>
         <Modal.Content>
             <Form>

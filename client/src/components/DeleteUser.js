@@ -6,8 +6,8 @@ export default function DeleteUser({ userId }) {
     const [activeModal, setActiveModal] = useState(false);
     const { deleteUser } = useContext(UserContext);
 
-    const handleDeletion = () => {
-        deleteUser(userId);
+    const handleDeletion = async () => {
+        await deleteUser(userId);
         setActiveModal(false);
     }
 

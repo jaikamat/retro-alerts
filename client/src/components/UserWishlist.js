@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { Item, Header, Segment, Button, Modal, Form } from 'semantic-ui-react';
+import { Item, Segment, Button, Modal, Form } from 'semantic-ui-react';
 import { UserContext } from './UserProvider';
+import { FlexRow, FlexColumn } from './style';
 
 export default function UserWishlist({ wantlist, userId }) {
     const { togglePending, addToWishlist, removeFromWishlist } = useContext(UserContext);
@@ -23,7 +24,7 @@ export default function UserWishlist({ wantlist, userId }) {
         setTitle('');
     }
 
-    const addItemModal = <Modal trigger={<Button primary onClick={() => setActiveModal(true)}>Add item to wishlist</Button>} open={activeModal}>
+    const addItemModal = <Modal trigger={<Button primary onClick={() => setActiveModal(true)}>Add item</Button>} open={activeModal}>
         <Modal.Header>Add wishlist item</Modal.Header>
         <Modal.Content>
             <Form>
@@ -43,39 +44,39 @@ export default function UserWishlist({ wantlist, userId }) {
         </Modal.Actions>
     </Modal>
 
-    if (wantlist.length === 0) {
-        return <React.Fragment>
-            <Header as="h4">Customer wishlist</Header>
-            <p>This customer's wishlist is empty!</p>
-            {addItemModal}
-        </React.Fragment>
-    }
+    const noResultsMsg = <p>This customer's wishlist is empty!</p>;
 
-    return <React.Fragment>
-        <Header as="h4">Customer wishlist</Header>
-        {addItemModal}
+    const userWishlist = <Item.Group divided>
+        {wantlist.map(w => {
+            const matches = w.match ? w.match.length : 0;
+            const pendingStatus = w.pending ? w.pending : false; // Shows/hides the Pending status buttons
+
+            return <Item key={w._id}>
+                <Item.Content>
+                    <Item.Header>UPC: {w.itemId}</Item.Header>
+                    <Item.Meta>{w.title}</Item.Meta>
+                    {!!matches && <p style={{ color: 'red' }}>IN STOCK</p>}
+                    {pendingStatus && <p style={{ color: 'green' }}>PENDING</p>}
+                </Item.Content>
+                <Item.Extra>
+                    {!pendingStatus && <Button floated="right" onClick={() => togglePending(userId, true, w._id)}>Set pending</Button>}
+                    {pendingStatus && <Button floated="right" onClick={() => togglePending(userId, false, w._id)}>Cancel pending</Button>}
+                </Item.Extra>
+                <Item.Extra><Button primary floated="right" onClick={() => removeFromWishlist(userId, w._id)}>Remove</Button></Item.Extra>
+
+            </Item>
+        })}
+    </Item.Group>
+
+    return <FlexColumn>
         <Segment>
-            <Item.Group divided>
-                {wantlist.map(w => {
-                    const matches = w.match ? w.match.length : 0;
-                    const pendingStatus = w.pending ? w.pending : false; // Shows/hides the Pending status buttons
-
-                    return <Item key={w._id}>
-                        <Item.Content>
-                            <Item.Header>UPC: {w.itemId}</Item.Header>
-                            <Item.Meta>{w.title}</Item.Meta>
-                            {!!matches && <p style={{ color: 'red' }}>IN STOCK</p>}
-                            {pendingStatus && <p style={{ color: 'green' }}>PENDING</p>}
-
-                        </Item.Content>
-                        <Item.Extra><Button primary floated="right" onClick={() => removeFromWishlist(userId, w._id)}>Remove from list</Button></Item.Extra>
-                        <Item.Extra>
-                            {!pendingStatus && <Button floated="right" onClick={() => togglePending(userId, true, w._id)}>Set as pending</Button>}
-                            {pendingStatus && <Button floated="right" onClick={() => togglePending(userId, false, w._id)}>Cancel pending</Button>}
-                        </Item.Extra>
-                    </Item>
-                })}
-            </Item.Group>
+            <FlexRow center>
+                <h2>Customer wishlist</h2>
+                {addItemModal}
+            </FlexRow>
+            <FlexRow>
+                {wantlist.length === 0 ? noResultsMsg : userWishlist}
+            </FlexRow>
         </Segment>
-    </React.Fragment>
+    </FlexColumn>
 }
