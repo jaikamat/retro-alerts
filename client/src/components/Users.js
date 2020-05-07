@@ -7,10 +7,12 @@ import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
 import UserInfo from './UserInfo';
 import UserWishlist from './UserWishlist';
+import _ from 'lodash';
 
 export default function Users() {
     const [users, setUsers] = useState([]);
     const [activeIndex, setActiveIndex] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const { toggleSpin } = useContext(SpinnerContext);
 
     const fetchUsers = async () => {
@@ -26,6 +28,7 @@ export default function Users() {
     }
 
     useEffect(() => {
+
         fetchUsers();
     }, []);
 
@@ -71,13 +74,30 @@ export default function Users() {
         }
     }
 
-    // Updates Row labels
-    const updateRowLabel = () => {
-        console.log('updating row label');
+    // Filters users by name
+    const filterNames = (e, { value }) => {
+        console.log(value);
+
+        setTimeout(async () => {
+            if (value.length < 3) {
+                await fetchUsers();
+                return;
+            }
+
+            const { data } = await axios.get(`http://localhost:3000/users`, { headers: makeAuthHeader() });
+            const filteredUsers = data.filter(({ firstname, lastname }) => {
+                const fullname = (firstname + lastname).toLowerCase();
+                const termNoSpaces = value.replace(' ', '').toLowerCase();
+                return fullname.includes(termNoSpaces);
+            })
+            setUsers(filteredUsers);
+        }, 300)
     }
 
+    const handleSearchChange = _.debounce(filterNames, 500, { leading: false });
+
     return <React.Fragment>
-        <Search />
+        <Search placeholder="Search by name" showNoResults={false} onSearchChange={handleSearchChange} />
         <AddUser addUser={addUser} />
         <Accordion fluid styled>
             {users.map((u, idx) => {
