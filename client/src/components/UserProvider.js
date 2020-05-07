@@ -65,7 +65,59 @@ export function UserProvider(props) {
         }
     }
 
-    return <UserContext.Provider value={{ userlist, fetchUsers, setSingleUser, addUser, deleteUser, filterByUsername }}>
+    const addToWishlist = async (userId, title, itemId) => {
+        try {
+            toggleSpin.on();
+            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist`, { title, itemId }, { headers: makeAuthHeader() });
+            setSingleUser(data);
+            toggleSpin.off();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    /**
+     * Sets the 'pending' status of individual customer wishlist items
+     * @param {string} userId
+     * @param {boolean} status
+     * @param {string} wantlistItemId
+     */
+    const togglePending = async (userId, status, wantlistItemId) => {
+        try {
+            toggleSpin.on();
+            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, {
+                setPending: status
+            }, { headers: makeAuthHeader() });
+            setSingleUser(data);
+            toggleSpin.off();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const removeFromWishlist = async (userId, wantlistItemId) => {
+        try {
+            toggleSpin.on();
+            const { data } = await axios.delete(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, { headers: makeAuthHeader() });
+            setSingleUser(data);
+            toggleSpin.off();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    return <UserContext.Provider
+        value={{
+            userlist,
+            fetchUsers,
+            setSingleUser,
+            addUser,
+            deleteUser,
+            filterByUsername,
+            addToWishlist,
+            togglePending,
+            removeFromWishlist
+        }}>
         {props.children}
     </UserContext.Provider>
 }

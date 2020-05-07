@@ -1,55 +1,17 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { Item, Header, Segment, Button, Modal, Form } from 'semantic-ui-react';
 import { UserContext } from './UserProvider';
-import { SpinnerContext } from './viewComponents/SpinnerContext';
-import makeAuthHeader from '../utils/makeAuthHeader';
 
 export default function UserWishlist({ wantlist, userId }) {
-    const { toggleSpin } = useContext(SpinnerContext);
-    const { setSingleUser } = useContext(UserContext);
+    const { togglePending, addToWishlist, removeFromWishlist } = useContext(UserContext);
     const [itemId, setItemId] = useState('');
     const [title, setTitle] = useState('');
     const [activeModal, setActiveModal] = useState(false);
 
-    // Add an item to user's wishlist
-    const addToWishlist = async () => {
+    const handleAdd = async (userId, title, itemId) => {
         try {
-            toggleSpin.on();
-            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist`, { title, itemId }, { headers: makeAuthHeader() });
-            setActiveModal(false);
-            setSingleUser(data);
-            toggleSpin.off();
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    /**
-     * Sets the 'pending' status of individual customer wishlist items
-     * @param {boolean} status
-     * @param {string} wantlistItemId
-     */
-    const togglePending = async (status, wantlistItemId) => {
-        try {
-            toggleSpin.on();
-            const { data } = await axios.post(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, {
-                setPending: status
-            }, { headers: makeAuthHeader() });
-            setSingleUser(data);
-            toggleSpin.off();
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    // Delete item from user's wishlist
-    const removeFromWishlist = async (wantlistItemId) => {
-        try {
-            toggleSpin.on();
-            const { data } = await axios.delete(`http://localhost:3000/users/${userId}/wantlist/${wantlistItemId}`, { headers: makeAuthHeader() });
-            setSingleUser(data);
-            toggleSpin.off();
+            await addToWishlist(userId, title, itemId);
+            handleCancel();
         } catch (err) {
             console.log(err);
         }
@@ -77,7 +39,7 @@ export default function UserWishlist({ wantlist, userId }) {
         </Modal.Content>
         <Modal.Actions>
             <Button onClick={handleCancel}>Cancel</Button>
-            <Button disabled={!itemId || !title} onClick={addToWishlist}>Submit</Button>
+            <Button disabled={!itemId || !title} onClick={() => handleAdd(userId, title, itemId)}>Submit</Button>
         </Modal.Actions>
     </Modal>
 
@@ -106,10 +68,10 @@ export default function UserWishlist({ wantlist, userId }) {
                             {pendingStatus && <p style={{ color: 'green' }}>PENDING</p>}
 
                         </Item.Content>
-                        <Item.Extra><Button primary floated="right" onClick={() => removeFromWishlist(w._id)}>Remove from list</Button></Item.Extra>
+                        <Item.Extra><Button primary floated="right" onClick={() => removeFromWishlist(userId, w._id)}>Remove from list</Button></Item.Extra>
                         <Item.Extra>
-                            {!pendingStatus && <Button floated="right" onClick={() => togglePending(true, w._id)}>Set as pending</Button>}
-                            {pendingStatus && <Button floated="right" onClick={() => togglePending(false, w._id)}>Cancel pending</Button>}
+                            {!pendingStatus && <Button floated="right" onClick={() => togglePending(userId, true, w._id)}>Set as pending</Button>}
+                            {pendingStatus && <Button floated="right" onClick={() => togglePending(userId, false, w._id)}>Cancel pending</Button>}
                         </Item.Extra>
                     </Item>
                 })}
