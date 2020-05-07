@@ -1,21 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Redirect } from 'react-router-dom';
+import { Button } from 'semantic-ui-react';
+import { FlexRow } from './style';
 import { AuthContext } from './AuthContext'
 
 const Logout = () => {
-    return <AuthContext.Consumer>
-        {({ handleLogout, loggedIn }) => {
-            if (!loggedIn) {
-                return <Redirect to="login" />
-            }
+    const { handleLogout, loggedIn } = useContext(AuthContext);
 
-            return <div>
-                <button onClick={handleLogout}>
-                    Click to log out
-                </button>
-            </div>
-        }}
-    </AuthContext.Consumer>
+    if (!loggedIn) {
+        return <Redirect to="login" />
+    }
+
+    return <FlexRow>
+        <Button onClick={handleLogout}>Click to log out</Button>
+    </FlexRow>
 }
 
 export default Logout
