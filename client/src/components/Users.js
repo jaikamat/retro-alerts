@@ -68,15 +68,17 @@ export default function Users() {
                     </AccordionHeader>
                     <AccordionContent active={activeIndex === idx}>
                         <Container>
-                            <Segment>
-                                <FlexRow>
-                                    <FlexColumn justify="start">
-                                        <UserInfo {...u} />
-                                    </FlexColumn>
+                            <FlexRow>
+                                <FlexColumn justify="start">
+                                    <UserInfo {...u} />
+                                </FlexColumn>
+                                <FlexColumn>
                                     <UserWishlist wantlist={u.wantlist} userId={u._id} />
-                                </FlexRow>
+                                </FlexColumn>
+                            </FlexRow>
+                            <FlexRow flush="right">
                                 <DeleteUser userId={u._id} />
-                            </Segment>
+                            </FlexRow>
                         </Container>
                     </AccordionContent>
                 </React.Fragment>

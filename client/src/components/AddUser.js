@@ -1,15 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Button, Modal, Form } from 'semantic-ui-react';
-import styled from 'styled-components';
+import { StyledButton } from './style';
 import { UserContext } from './UserProvider';
-
-const StyledButton = styled(Button)`
-background-color: ${props => props.primary ? `salmon` : null} !important;
-&:hover {
-    background-color: rgba(251, 166, 157, 1) !important;
-    transition: 0.1s ease-in !important;
-}
-`;
 
 export default function AddUser() {
     const [firstname, setFirstname] = useState('');
