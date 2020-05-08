@@ -34,7 +34,10 @@ async function init() {
 
         const scrapedDataModified = scrapedData.map(d => {
             const { systemSku, description, customSku, manufacturerSku, upc, Prices, ItemShops } = d;
-            return { systemSku, description, customSku, manufacturerSku, upc, Prices, ItemShops };
+
+            const myQoh = parseInt(ItemShops.ItemShop[0].qoh) // parse the QOH to an integer value for easier comparison within application
+
+            return { systemSku, description, customSku, manufacturerSku, upc, Prices, qoh: myQoh };
         })
 
         const bulkWriteOps = scrapedDataModified.map(d => {
