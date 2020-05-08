@@ -213,7 +213,7 @@ router.delete('/:id', async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    res.json(await User.deleteOne({ _id: id }));
+    res.json(await User.findOneAndDelete({ _id: id }));
   } catch (err) {
     next(err);
   }

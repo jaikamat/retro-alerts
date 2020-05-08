@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Header } from 'semantic-ui-react';
 
 export const FlexRow = styled.div`
     display: flex;
@@ -14,4 +15,8 @@ export const FlexColumn = styled.div`
     flex-direction: column;
     justify-content: ${props => props.justify === 'start' ? `flex-start` : null};
     flex: 1 !important;
+`;
+
+export const ColorfulHeader = styled(Header)`
+    color: salmon !important;
 `;

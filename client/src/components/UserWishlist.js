@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Item, Segment, Button, Modal, Form } from 'semantic-ui-react';
 import { UserContext } from './UserProvider';
-import { FlexRow, FlexColumn } from './style';
+import { FlexRow, FlexColumn, ColorfulHeader } from './style';
 
 export default function UserWishlist({ wantlist, userId }) {
     const { togglePending, addToWishlist, removeFromWishlist } = useContext(UserContext);
@@ -71,10 +71,10 @@ export default function UserWishlist({ wantlist, userId }) {
     return <FlexColumn>
         <Segment>
             <FlexRow center>
-                <h2>Customer wishlist</h2>
+                <ColorfulHeader as="h2">Customer wishlist</ColorfulHeader>
                 {addItemModal}
             </FlexRow>
-            <FlexRow>
+            <FlexRow center>
                 {wantlist.length === 0 ? noResultsMsg : userWishlist}
             </FlexRow>
         </Segment>

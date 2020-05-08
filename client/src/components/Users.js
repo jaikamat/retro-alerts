@@ -75,12 +75,6 @@ export default function Users() {
                                     </FlexColumn>
                                     <UserWishlist wantlist={u.wantlist} userId={u._id} />
                                 </FlexRow>
-                                {/* <Grid columns={2} stackable>
-                                    <Grid.Column>
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                    </Grid.Column>
-                                </Grid> */}
                                 <DeleteUser userId={u._id} />
                             </Segment>
                         </Container>

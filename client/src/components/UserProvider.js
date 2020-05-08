@@ -9,29 +9,39 @@ export function UserProvider(props) {
     const [userlist, setUserlist] = useState([]);
     const { toggleSpin } = useContext(SpinnerContext);
 
-    const fetchUsers = async () => {
-        try {
-            toggleSpin.on();
-            const { data } = await axios.get(`http://localhost:3000/users`, { headers: makeAuthHeader() });
-            setUserlist(data);
-            toggleSpin.off();
-        } catch (err) {
-            console.log(err)
-        }
+    const sortUsers = (users) => {
+        return [...users].sort((a, b) => {
+            const name1 = (a.lastname + a.firstname).toLowerCase();
+            const name2 = (b.lastname + b.firstname).toLowerCase();
+            if (name1 < name2) return -1;
+            if (name1 > name2) return 1;
+            return 0;
+        });
     }
 
     const setSingleUser = user => {
         const usersCopy = [...userlist];
         const idx = usersCopy.findIndex(el => el._id === user._id);
         usersCopy.splice(idx, 1, user); // Mutate the array in-place with the new user
-        setUserlist(usersCopy);
+        setUserlist(sortUsers(usersCopy));
+    }
+
+    const fetchUsers = async () => {
+        try {
+            toggleSpin.on();
+            const { data } = await axios.get(`http://localhost:3000/users`, { headers: makeAuthHeader() });
+            setUserlist(sortUsers(data));
+            toggleSpin.off();
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     const addUser = async ({ firstname, lastname, email, phone }) => {
         try {
             toggleSpin.on();
-            await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone }, { headers: makeAuthHeader() });
-            await fetchUsers();
+            const { data } = await axios.post(`http://localhost:3000/users`, { firstname, lastname, email, phone }, { headers: makeAuthHeader() });
+            setUserlist(sortUsers([...userlist, data]));
             toggleSpin.off();
         } catch (err) {
             console.log(err);
@@ -41,8 +51,9 @@ export function UserProvider(props) {
     const deleteUser = async userId => {
         try {
             toggleSpin.on();
-            await axios.delete(`http://localhost:3000/users/${userId}`, { headers: makeAuthHeader() })
-            await fetchUsers();
+            const { data } = await axios.delete(`http://localhost:3000/users/${userId}`, { headers: makeAuthHeader() })
+            const newUserlist = userlist.filter(el => el._id !== data._id);
+            setUserlist(sortUsers(newUserlist));
             toggleSpin.off();
         } catch (err) {
             console.log(err);
@@ -58,7 +69,7 @@ export function UserProvider(props) {
                 const termNoSpaces = value.replace(' ', '').toLowerCase();
                 return fullname.includes(termNoSpaces);
             })
-            setUserlist(filteredUsers);
+            setUserlist(sortUsers(filteredUsers));
             toggleSpin.off();
         } catch (err) {
             console.log(err);

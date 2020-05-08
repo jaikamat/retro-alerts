@@ -44,24 +44,24 @@ export default function AddUser() {
             <Form>
                 <Form.Field>
                     <label>First name</label>
-                    <input placeholder="First name" value={firstname} onChange={({ target }) => setFirstname(target.value)} />
+                    <input placeholder="First name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                 </Form.Field>
                 <Form.Field>
                     <label>Last name</label>
-                    <input placeholder="Last name" value={lastname} onChange={({ target }) => setLastname(target.value)} />
+                    <input placeholder="Last name" value={lastname} onChange={(e) => setLastname(e.target.value)} />
                 </Form.Field>
                 <Form.Field>
                     <label>Email address</label>
-                    <input placeholder="Email address" value={email} onChange={({ target }) => setEmail(target.value)} />
+                    <input placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </Form.Field>
                 <Form.Field>
                     <label>Phone number</label>
-                    <input placeholder="Phone number" value={phone} onChange={({ target }) => setPhone(target.value)} />
+                    <input placeholder="Phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 </Form.Field>
             </Form>
         </Modal.Content>
         <Modal.Actions>
-            <Button onClick={() => handleReset(false)}>Cancel</Button>
+            <Button onClick={handleReset}>Cancel</Button>
             <Button disabled={!formValid} onClick={() => handleAdd()}>Submit</Button>
         </Modal.Actions>
     </Modal >
