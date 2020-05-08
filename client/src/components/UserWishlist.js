@@ -80,8 +80,8 @@ export default function UserWishlist({ wantlist, userId }) {
                     </div>
                     <Spacer flush="left" />
                     <div>
-                        {!pendingStatus && <Button circular icon="check" onClick={() => togglePending(userId, true, w._id)} />}
-                        {pendingStatus && <Button color="green" circular icon="check" onClick={() => togglePending(userId, false, w._id)} />}
+                        {!pendingStatus && <Button circular icon="shopping cart" onClick={() => togglePending(userId, true, w._id)} />}
+                        {pendingStatus && <Button color="green" circular icon="shopping cart" onClick={() => togglePending(userId, false, w._id)} />}
                     </div>
                     <Button
                         color="red"
