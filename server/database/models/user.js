@@ -11,6 +11,10 @@ const UserSchema = new mongoose.Schema({
     },
     email: String,
     phone: Number,
+    contacted: {
+        type: Date,
+        default: null
+    },
     wantlist: [{
         title: {
             type: String,

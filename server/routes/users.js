@@ -34,6 +34,7 @@ async function aggregateUsers(userId) {
       lastname: { $first: '$lastname' },
       email: { $first: '$email' },
       phone: { $first: '$phone' },
+      contacted: { $first: '$contacted' },
       wantlist: { $push: '$wantlist' }
     })
     // Ok, this is weird one. Unwinding on null arrays then performing a $lookup
@@ -120,6 +121,36 @@ router.get('/:id/wantlist', async (req, res, next) => {
     const user = await User.findOne({ _id: req.params.id });
 
     res.json(user.wantlist);
+  } catch (err) {
+    next(err);
+  }
+})
+
+/**
+ * Edit user properties
+ */
+router.post('/:id', async (req, res, next) => {
+  const { firstname, lastname, email, phone, contacted } = req.body;
+
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+
+    if (firstname) user.firstname = firstname;
+    if (lastname) user.lastname = lastname;
+    if (email) user.email = email;
+    if (phone) user.phone - phone;
+    if (contacted === true) {
+      user.contacted = new Date().toISOString();
+    } else if (contacted === false) {
+      user.contacted = null;
+    }
+
+    await user.save();
+
+    const aggregate = await aggregateUsers(req.params.id);
+
+    res.json(aggregate[0]);
+
   } catch (err) {
     next(err);
   }
