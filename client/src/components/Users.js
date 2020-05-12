@@ -4,6 +4,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import AddUser from './AddUser';
 import DeleteUser from './DeleteUser';
+import EditUser from './EditUser'
 import UserInfo from './UserInfo';
 import UserWishlist from './UserWishlist';
 import { UserContext } from './UserProvider';
@@ -62,7 +63,7 @@ export default function Users() {
                 return <React.Fragment key={u._id}>
                     <AccordionHeader active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
-                        {u.lastname}, {u.firstname} {" "}
+                        {u.lastname}, {u.firstname} {" "} {u.contacted}
                         {!!numMatches && <Label color="teal">{numMatches} in stock</Label>}
                         {!!numNotPending && <Label color="red">{numNotPending} unhandled</Label>}
                     </AccordionHeader>
@@ -78,6 +79,7 @@ export default function Users() {
                             </FlexRow>
                             <FlexRow flush="right">
                                 <DeleteUser userId={u._id} />
+                                <EditUser userId={u._id} contacted={u.contacted} />
                             </FlexRow>
                         </Container>
                     </AccordionContent>

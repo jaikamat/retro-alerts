@@ -37,6 +37,17 @@ export function UserProvider(props) {
         }
     }
 
+    const editUser = async (userId, { firstname, lastname, email, phone, contacted = false }) => {
+        try {
+            toggleSpin.on();
+            const { data } = await axios.post(`http://localhost:3000/users/${userId}`, { firstname, lastname, email, phone, contacted }, { headers: makeAuthHeader() });
+            setSingleUser(data);
+            toggleSpin.off();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     const addUser = async ({ firstname, lastname, email, phone }) => {
         try {
             toggleSpin.on();
@@ -127,7 +138,8 @@ export function UserProvider(props) {
             filterByUsername,
             addToWishlist,
             togglePending,
-            removeFromWishlist
+            removeFromWishlist,
+            editUser
         }}>
         {props.children}
     </UserContext.Provider>
