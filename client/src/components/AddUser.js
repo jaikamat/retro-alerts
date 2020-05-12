@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Button, Modal, Form } from 'semantic-ui-react';
-import { StyledButton } from './style';
+import { StyledButton, COLOR_3 } from './style';
 import { UserContext } from './UserProvider';
 
 export default function AddUser() {
@@ -30,7 +30,7 @@ export default function AddUser() {
 
     const formValid = firstname && lastname && email && phone;
 
-    return <Modal trigger={<StyledButton floated="right" primary onClick={() => setActiveModal(true)}>Add customer</StyledButton>} open={activeModal}>
+    return <Modal trigger={<StyledButton col={COLOR_3} floated="right" primary onClick={() => setActiveModal(true)}>Add customer</StyledButton>} open={activeModal}>
         <Modal.Header>Add a customer</Modal.Header>
         <Modal.Content>
             <Form>

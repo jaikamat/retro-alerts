@@ -3,6 +3,7 @@ import { Link, HashRouter as Router } from 'react-router-dom';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import { MAIN_COLOR, GRAD_COLOR, COLOR_3 } from '../components/style'
 
 const Header = styled.nav`
     /** Fixes the bar to the top */
@@ -18,7 +19,7 @@ const Header = styled.nav`
     height: ${props => props.height}px;
 
     /** Color */
-    background: linear-gradient(salmon, #e66262);
+    background: linear-gradient(${MAIN_COLOR}, ${GRAD_COLOR});
     box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
 
     /** Font */
@@ -40,7 +41,7 @@ const StyledLink = styled(Link)`
     }
     &:hover {
         color: white !important;
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: ${COLOR_3};
         transition: 0.1s linear;
     }
     @media (max-width: 768px) {

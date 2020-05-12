@@ -1,5 +1,13 @@
 import styled from 'styled-components';
-import { Header, Button } from 'semantic-ui-react';
+import { Header, Button, Label } from 'semantic-ui-react';
+
+export const MAIN_COLOR = '#7B1E7A'; // Purple
+export const GRAD_COLOR = '#651564'; // Mavbar gradient swatch
+export const COLOR_2 = '#B33F62';
+export const COLOR_3 = '#F9564F'; // Salmon
+export const COLOR_4 = '#FDBE6C'; // Goldenrod
+export const COLOR_5 = '#00A6A6'; // Teal
+export const HIGHLIGHT = 'fDBE6C69'; // Off-goldenrod
 
 export const FlexRow = styled.div`
     display: flex;
@@ -23,13 +31,19 @@ export const FlexColumn = styled.div`
 `;
 
 export const ColorfulHeader = styled(Header)`
-    color: salmon !important;
+    color: ${COLOR_2} !important;
 `;
 
 export const StyledButton = styled(Button)`
-    background-color: ${props => props.primary ? `salmon` : null} !important;
+    color: white !important;
+    background-color: ${({ col }) => col ? col : null} !important;
     &:hover {
-        background-color: rgba(251, 166, 157, 1) !important;
+        opacity: 0.5;
         transition: 0.1s ease-in !important;
     }
+`;
+
+export const StyledLabel = styled(Label)`
+    color: white !important;
+    background-color: ${props => props.col} !important;
 `;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Accordion, Segment, Search, Container, Icon, Label } from 'semantic-ui-react';
+import { Accordion, Search, Container, Icon } from 'semantic-ui-react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import AddUser from './AddUser';
@@ -9,7 +9,7 @@ import UserInfo from './UserInfo';
 import UserWishlist from './UserWishlist';
 import ContactAlert from './ContactAlert';
 import { UserContext } from './UserProvider';
-import { FlexRow, FlexColumn } from './style';
+import { FlexRow, FlexColumn, StyledLabel, COLOR_5 } from './style';
 
 const AccordionHeader = styled(Accordion.Title)`
 background-color: ${props => props.active ? `#eee` : null} !important;
@@ -65,8 +65,8 @@ export default function Users() {
                     <AccordionHeader active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
                         {u.lastname}, {u.firstname} {" "}
-                        {!!numMatches && <Label color="teal">{numMatches} in stock</Label>}
-                        {!!numNotPending && <Label color="red">{numNotPending} unhandled</Label>}
+                        {!!numMatches && <StyledLabel col={COLOR_5}>{numMatches} in stock</StyledLabel>}
+                        {!!numNotPending && <StyledLabel col="red">{numNotPending} unhandled</StyledLabel>}
                         <ContactAlert contacted={u.contacted} />
                     </AccordionHeader>
                     <AccordionContent active={activeIndex === idx}>

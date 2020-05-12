@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { COLOR_3 } from '../style';
 
 const Input = styled.input`
     display: block;
@@ -10,7 +11,7 @@ const Input = styled.input`
         color: #bfbfbf;
     }
     &:focus {
-        border: 1px solid salmon;
+        border: 1px solid ${COLOR_3};
         transition: 0.1s linear;
     }
     &:focus::placeholder {

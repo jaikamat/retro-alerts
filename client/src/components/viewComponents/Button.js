@@ -1,8 +1,9 @@
 import styled from 'styled-components';
+import { COLOR_3 } from '../style';
 
 const Button = styled.button`
     color: white;
-    background-color: salmon;
+    background-color: ${COLOR_3};
     border: 0px;
     border-radius: 5px;
     padding: 12px 20px 12px 20px;

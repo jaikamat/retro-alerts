@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { SpinnerContext } from './SpinnerContext';
+import { COLOR_3 } from '../style';
 
 const rotate = keyframes`
     from {
@@ -26,7 +27,7 @@ const SpinStyle = styled.div`
     height: 30px;
     border: 3px solid #ddd;
     border-radius: 50%;
-    border-top-color: salmon;
+    border-top-color: ${COLOR_3};
     animation: ${rotate} 1s ease-in-out infinite;
 `;
 

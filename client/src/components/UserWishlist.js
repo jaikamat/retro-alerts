@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { Segment, Button, Modal, Form, Label } from 'semantic-ui-react';
+import { Segment, Button, Modal, Form } from 'semantic-ui-react';
 import { UserContext } from './UserProvider';
-import { FlexRow, FlexColumn, ColorfulHeader, StyledButton } from './style';
+import { FlexRow, FlexColumn, ColorfulHeader, StyledButton, StyledLabel, COLOR_3, COLOR_5 } from './style';
 import styled from 'styled-components';
 
 const WishlistRow = styled.div`
@@ -42,7 +42,7 @@ export default function UserWishlist({ wantlist, userId }) {
         setTitle('');
     }
 
-    const addItemModal = <Modal trigger={<StyledButton primary onClick={() => setActiveModal(true)}>Add item</StyledButton>} open={activeModal}>
+    const addItemModal = <Modal trigger={<StyledButton col={COLOR_3} primary onClick={() => setActiveModal(true)}>Add item</StyledButton>} open={activeModal}>
         <Modal.Header>Add wishlist item</Modal.Header>
         <Modal.Content>
             <Form>
@@ -72,7 +72,7 @@ export default function UserWishlist({ wantlist, userId }) {
             return <WishlistRow key={w._id}>
                 <WishlistItem>
                     <div style={{ marginLeft: '4px', marginTop: '6px' }}>
-                        {!!matches && <Label color="teal" ribbon>In stock</Label>}
+                        {!!matches && <StyledLabel col={COLOR_5} ribbon>In stock</StyledLabel>}
                     </div>
                     <div>
                         <div><b>UPC: </b>{w.itemId}</div>
@@ -80,8 +80,8 @@ export default function UserWishlist({ wantlist, userId }) {
                     </div>
                     <Spacer flush="left" />
                     <div>
-                        {!pendingStatus && <Button circular icon="shopping cart" onClick={() => togglePending(userId, true, w._id)} />}
-                        {pendingStatus && <Button color="green" circular icon="shopping cart" onClick={() => togglePending(userId, false, w._id)} />}
+                        {!pendingStatus && <StyledButton circular icon="shopping cart" onClick={() => togglePending(userId, true, w._id)} />}
+                        {pendingStatus && <StyledButton col={COLOR_5} circular icon="shopping cart" onClick={() => togglePending(userId, false, w._id)} />}
                     </div>
                     <div>
                         <Button
