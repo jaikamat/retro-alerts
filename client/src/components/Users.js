@@ -7,6 +7,7 @@ import DeleteUser from './DeleteUser';
 import EditUser from './EditUser'
 import UserInfo from './UserInfo';
 import UserWishlist from './UserWishlist';
+import ContactAlert from './ContactAlert';
 import { UserContext } from './UserProvider';
 import { FlexRow, FlexColumn } from './style';
 
@@ -63,9 +64,10 @@ export default function Users() {
                 return <React.Fragment key={u._id}>
                     <AccordionHeader active={activeIndex === idx} onClick={() => activate(idx)}>
                         <Icon name="dropdown" />
-                        {u.lastname}, {u.firstname} {" "} {u.contacted}
+                        {u.lastname}, {u.firstname} {" "}
                         {!!numMatches && <Label color="teal">{numMatches} in stock</Label>}
                         {!!numNotPending && <Label color="red">{numNotPending} unhandled</Label>}
+                        <ContactAlert contacted={u.contacted} />
                     </AccordionHeader>
                     <AccordionContent active={activeIndex === idx}>
                         <Container>

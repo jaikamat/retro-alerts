@@ -4,7 +4,11 @@ import { Header, Button } from 'semantic-ui-react';
 export const FlexRow = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: ${props => props.flush === 'right' ? 'flex-end' : 'space-between'};
+    justify-content: ${props => {
+        if (props.flush === 'left') return 'flex-start';
+        if (props.flush === 'right') return 'flex-end';
+        return 'space-between';
+    }};
     padding: 0 10px 15px 10px;
     align-items: ${props => props.center ? 'center !important' : null};
     flex: 1 !important;
