@@ -83,12 +83,14 @@ export default function UserWishlist({ wantlist, userId }) {
                         {!pendingStatus && <Button circular icon="shopping cart" onClick={() => togglePending(userId, true, w._id)} />}
                         {pendingStatus && <Button color="green" circular icon="shopping cart" onClick={() => togglePending(userId, false, w._id)} />}
                     </div>
-                    <Button
-                        color="red"
-                        circular
-                        icon="times"
-                        onClick={() => removeFromWishlist(userId, w._id)}
-                    ></Button>
+                    <div>
+                        <Button
+                            color="red"
+                            circular
+                            icon="times"
+                            onClick={() => removeFromWishlist(userId, w._id)}
+                        />
+                    </div>
                 </WishlistItem>
             </WishlistRow>
         })}
